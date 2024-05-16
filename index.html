@@ -73,7 +73,7 @@
         reader.readAsDataURL(file);
     });
 
-    function speak(textInput,voice = "Samantha") {
+    function speak(textInput,voice = "Majed") {
             let voices = speechSynthesis.getVoices();
             // Log the voices to the console
             // Get the text to be spoken
@@ -87,7 +87,7 @@
             utterance.pitch = 1; // Pitch (0 to 2, default is 1)
             utterance.rate = 1; // Rate (0.1 to 10, default is 1)
             utterance.volume = 1; // Volume (0 to 1, default is 1)
-            //utterance.voice = realVoice
+            utterance.voice = realVoice
             // Speak the utterance
             synthesisA.speak(utterance);
         }
