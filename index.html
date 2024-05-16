@@ -4,8 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
+        
 </head>
 <body>
-    <p>Test</p>
+    <h1>Quick eReader</h1>
+    <input type="file" id="fileInput" accept=".pdf">
 </body>
+
+<script>
+    let synthesisA = window.speechSynthesis;
+    async function loadPdf(pdf,pageNum){
+        const loadedPdf = await pdfjsLib.getDocument(pdf).promise;
+        const page = await loadedPdf.getPage(229);
+        const textContent = await page.getTextContent();
+        console.log(textContent);
+        return textContent;
+    }
+
+    const input = document.getElementById('fileInput');
+    let pageContent;
+    input.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function() {
+            const url = reader.result;
+            let test = loadPdf(url).then(test=>{
+                console.log(test.items);
+                let array = test.items
+                pageContent = "";
+                for (i=0;i<array.length;i++){
+                    console.log(array[i].str)
+                    pageContent += array[i].str
+                }
+                console.log(pageContent)
+                speak(pageContent)
+            })
+        };
+        reader.readAsDataURL(file);
+    });
+
+    function speak(textInput,voice = "Samantha") {
+            let voices = speechSynthesis.getVoices();
+            // Log the voices to the console
+            // Get the text to be spoken
+            let text = textInput
+            let realVoice = voices.find(v => v.name === voice);
+            // Create a new SpeechSynthesisUtterance object
+            let utterance = new SpeechSynthesisUtterance(text);
+
+            // Optional: Set properties
+            utterance.lang = 'en-US'; // Language code (default is 'en-US')
+            utterance.pitch = 1; // Pitch (0 to 2, default is 1)
+            utterance.rate = 1; // Rate (0.1 to 10, default is 1)
+            utterance.volume = 1; // Volume (0 to 1, default is 1)
+            utterance.voice = realVoice
+            // Speak the utterance
+            synthesisA.speak(utterance);
+        }
+
+</script>
 </html>
