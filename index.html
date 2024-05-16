@@ -10,16 +10,45 @@
 <body>
     <h1>Quick eReader</h1>
     <input type="file" id="fileInput" accept=".pdf">
+    <select id = voices></select>
 </body>
 
 <script>
     let synthesisA = window.speechSynthesis;
+    window.onload= (event)=>{
+        addList()
+    }
     async function loadPdf(pdf,pageNum){
         const loadedPdf = await pdfjsLib.getDocument(pdf).promise;
         const page = await loadedPdf.getPage(229);
         const textContent = await page.getTextContent();
         console.log(textContent);
         return textContent;
+    }
+    
+    function populateVoiceList() {
+        return new Promise((resolve, reject) => {
+            let voices = speechSynthesis.getVoices();
+            if (voices.length !== 0) {
+                resolve(voices);
+            } else {
+                speechSynthesis.onvoiceschanged = function() {
+                    voices = speechSynthesis.getVoices();
+                    resolve(voices);
+                };
+            }
+        });
+    }
+    
+    async function addList(){
+        const voices = await populateVoiceList();
+        const select = document.getElementById("voices");
+        for(i= 0;i<voices.length;i++){
+            let option = document.createElement('option');
+            option.textContent = voices[i].name;
+            option.setAttribute('value', voices[i].name);
+            select.appendChild(option);
+        };
     }
 
     const input = document.getElementById('fileInput');
